@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
 
+/**
+ * MenuItem is POJO class representing the POJO Details.
+ */
 @Value
 @Builder
 @JsonDeserialize
