@@ -1,0 +1,21 @@
+// Protobuf file for defining grpc service
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "example.myapp.restaurant.grpc";
+option java_outer_classname = "RestaurantProto";
+
+package restaurant;
+
+service RestaurantService {
+    rpc getMenuViaGrpc (RequestMenu) returns (MenuReply) {
+    }
+}
+
+message RequestMenu {
+    string item = 1;
+}
+
+message MenuReply {
+    string message = 1;
+}
