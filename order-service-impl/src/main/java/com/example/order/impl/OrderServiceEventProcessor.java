@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-
 /**
  * OrderServiceEventProcessor is a class which implements code for Read side processor to handle OrderService events.
  */

@@ -17,7 +17,6 @@ val lombokDependency = "org.projectlombok" % "lombok" % "1.16.16" % "provided"
 lazy val `lagom-grpc-restaurant` = (project in file("."))
   .aggregate(`menu-service-api`, `menu-service-impl`, `order-service-api`, `order-service-impl`)
 
-
 lazy val `menu-service-api` = (project in file("menu-service-api"))
   .settings(common)
   .settings(
