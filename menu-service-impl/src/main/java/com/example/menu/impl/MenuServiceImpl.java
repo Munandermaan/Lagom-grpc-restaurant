@@ -9,6 +9,7 @@ import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
 import com.lightbend.lagom.javadsl.persistence.ReadSide;
 import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraSession;
+import org.apache.log4j.Logger;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
  * Call methods related to the routes for Menu Service API.
  */
 public class MenuServiceImpl implements MenuService {
-
+    private static final Logger LOGGER = Logger.getLogger(MenuServiceImpl.class);
     private final PersistentEntityRegistry persistentEntityRegistry;
     private final CassandraSession cassandraSession;
 
@@ -35,9 +36,8 @@ public class MenuServiceImpl implements MenuService {
                     final CassandraSession cassandraSession,
                     final ReadSide readSide) {
         this.persistentEntityRegistry = persistentEntityRegistry;
-        persistentEntityRegistry.register(MenuServiceEntity.class);
-
         this.cassandraSession = cassandraSession;
+        persistentEntityRegistry.register(MenuServiceEntity.class);
 
         readSide.register(MenuServiceEventProcessor.class);
     }
@@ -48,15 +48,18 @@ public class MenuServiceImpl implements MenuService {
      * @return list of items in the database.
      */
     public ServiceCall<NotUsed, List<String>> getMenuService() {
-        return request ->
-                cassandraSession.selectAll("select * from menu")
-                        .thenApply(rows ->
-                                rows.stream().map(row -> row.getString("items")).collect(Collectors.toList()));
+        return request -> {
+            LOGGER.info("Getting menu items from the database");
+           return cassandraSession.selectAll("select * from menu")
+                    .thenApply(rows ->
+                            rows.stream().map(row -> row.getString("items")).collect(Collectors.toList()));
+        };
     }
 
     @Override
     public ServiceCall<List<MenuItem>, Done> createMenuService() {
         return request -> {
+            LOGGER.debug("Create menu in the database with request" + request);
             final String entityId = UUID.randomUUID().toString();
             return persistentEntityRegistry.refFor(MenuServiceEntity.class, entityId)
                     .ask(MenuServiceCommand.CreateMenu.builder().menuItems(request).build());
@@ -66,6 +69,7 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public ServiceCall<List<MenuItem>, Done> deleteItemsFromMenuService() {
         return request -> {
+            LOGGER.debug("Will delete items from menu with request" + request);
             final String entityId = UUID.randomUUID().toString();
             return persistentEntityRegistry.refFor(MenuServiceEntity.class, entityId)
                     .ask(MenuServiceCommand.DeleteItemsFromMenu.builder().menuItems((request)).build());

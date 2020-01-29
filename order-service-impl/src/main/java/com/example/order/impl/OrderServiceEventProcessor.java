@@ -92,7 +92,7 @@ public final class OrderServiceEventProcessor extends ReadSideProcessor<OrderSer
      * @return List of  prepared statements with values bound to the bind variables.
      */
     private CompletionStage<List<BoundStatement>> insertOrder(OrderServiceEvent.OrderServicePlaced orderPlaced) {
-        System.out.println("It is in the insertOrder function" + orderPlaced.getMenuItems());
+        LOGGER.debug("Placing order for items" + orderPlaced.getMenuItems());
         try {
             return CassandraReadSide.completedStatement(insertOrder.bind(orderPlaced.getId(),
                     objectMapper.writeValueAsString(orderPlaced.getMenuItems())));

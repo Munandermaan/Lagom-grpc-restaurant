@@ -10,6 +10,8 @@ import com.lightbend.lagom.javadsl.persistence.ReadSide;
 import example.myapp.restaurant.grpc.MenuReply;
 import example.myapp.restaurant.grpc.RequestMenu;
 import example.myapp.restaurant.grpc.RestaurantServiceClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,7 +21,7 @@ import java.util.UUID;
  * Call methods related to the routes for Menu Service API.
  */
 public class OrderServiceImpl implements OrderService {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrderServiceImpl.class);
     private final PersistentEntityRegistry persistentEntityRegistry;
     private final RestaurantServiceClient restaurantServiceClient;
 
@@ -44,6 +46,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public ServiceCall<List<MenuItem>, String> placeOrder() {
         return request -> {
+            LOGGER.info("Placing order with items" + request);
             final String entityId = UUID.randomUUID().toString();
             return persistentEntityRegistry.refFor(OrderServiceEntity.class, entityId)
                     .ask(OrderServiceCommand.PlaceOrderService.builder().id(entityId).menuItems(request).build());
@@ -52,14 +55,17 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ServiceCall<NotUsed, String> getMenuItemsViaGrpc() {
-        return req -> restaurantServiceClient
-                .getMenuViaGrpc(
-                        RequestMenu.newBuilder()
-                                .setItem(NotUsed.getInstance().toString())
-                                .build()
-                ).thenApply(
-                        MenuReply::getMessage
-                );
+        return req -> {
+            LOGGER.info("Getting menu items via gRPC");
+            return restaurantServiceClient
+                    .getMenuViaGrpc(
+                            RequestMenu.newBuilder()
+                                    .setItem(NotUsed.getInstance().toString())
+                                    .build()
+                    ).thenApply(
+                    MenuReply::getMessage
+            );
+        };
     }
 }
 

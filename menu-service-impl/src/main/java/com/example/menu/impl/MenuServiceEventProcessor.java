@@ -106,7 +106,7 @@ public final class MenuServiceEventProcessor extends ReadSideProcessor<MenuServi
      * @return List of  prepared statements with values bound to the bind variables.
      */
     private CompletionStage<List<BoundStatement>> insertItemsInMenu(MenuServiceEvent.MenuServiceCreated menuCreated) {
-        System.out.println("It is in the menuitem" + menuCreated.getMenuItems());
+        LOGGER.info("Inserting items in the cassandra table"+ menuCreated.getMenuItems());
         try {
             return CassandraReadSide.completedStatement(insertItemsInMenu.bind(
                     objectMapper.writeValueAsString(menuCreated.getMenuItems())));
@@ -122,8 +122,8 @@ public final class MenuServiceEventProcessor extends ReadSideProcessor<MenuServi
      * @param itemsDeleted contains values to be deleted.
      * @return List of  prepared statements with values bound to the bind variables.
      */
-    private CompletionStage<List<BoundStatement>> deleteItemsFromMenu(MenuServiceEvent.ItemsDeletedFromMenuService
-                                                                              itemsDeleted) {
+    private CompletionStage<List<BoundStatement>> deleteItemsFromMenu(MenuServiceEvent.ItemsDeletedFromMenuService itemsDeleted) {
+        LOGGER.info("Deleting items from the cassandra table" + itemsDeleted.getMenuItems());
         try {
             return CassandraReadSide.completedStatement(deleteItemsInMenu.bind(
                     objectMapper.writeValueAsString(itemsDeleted.getMenuItems())));

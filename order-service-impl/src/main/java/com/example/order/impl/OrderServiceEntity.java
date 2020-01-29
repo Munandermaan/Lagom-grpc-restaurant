@@ -22,7 +22,7 @@ final class OrderServiceEntity extends PersistentEntity<OrderServiceCommand, Ord
         BehaviorBuilder behaviorBuilder = newBehaviorBuilder(optionalOrderState.orElse(OrderServiceState.builder().build()));
 
         behaviorBuilder.setCommandHandler(OrderServiceCommand.PlaceOrderService.class, (cmd, ctx) -> {
-            LOGGER.info("Persisting OrderServicePlaced event for order items");
+            LOGGER.info("Persisting OrderServicePlaced event for order items with items" + cmd.getMenuItems());
             return ctx.thenPersist(OrderServiceEvent.OrderServicePlaced.builder().menuItems(cmd.getMenuItems()).id(cmd.getId()).build(), evt ->
                     ctx.reply(cmd.getId()));
         });
